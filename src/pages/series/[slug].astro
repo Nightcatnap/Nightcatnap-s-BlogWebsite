@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getSeriesMap, sortPosts } from "../../utils/posts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  const seriesMap = getSeriesMap(posts);
+  return [...seriesMap.entries()].map(([name]) => ({
+    params: { slug: name.toLowerCase().replace(/\s+/g, "-") },
+    props: { seriesName: name },
+  }));
+}
+
+const { seriesName } = Astro.props;
+const allPosts = await getCollection("posts");
+const seriesMap = getSeriesMap(allPosts);
+const posts = sortPosts(seriesMap.get(seriesName) || [], "date");
+
+// Find series_description from first post that has it
+const seriesInfo = posts.find((p) => p.data.series_description);
+const seriesDesc = seriesInfo?.data.series_description || "";
+---
+
+<BaseLayout title={`专栏: ${seriesName}`} description={seriesDesc || `浏览专栏 "${seriesName}" 的所有文章。`}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
+      专栏：{seriesName}
+    </h1>
+    {seriesDesc && (
+      <p class="text-[var(--color-muted)] mb-4">{seriesDesc}</p>
+    )}
+    <p class="text-[var(--color-muted)] mb-8">共 {posts.length} 篇文章</p>
+
+    {posts.length === 0 ? (
+      <p class="text-[var(--color-muted)]">没有找到相关文章。</p>
+    ) : (
+      <div class="space-y-6">
+        {posts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

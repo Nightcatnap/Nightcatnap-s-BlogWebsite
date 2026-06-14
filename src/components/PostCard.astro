@@ -1,0 +1,45 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TagBadge from "./TagBadge.astro";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+const { title, date, updated, tags, summary } = post.data;
+const displayDate = new Date(date).toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+const updatedDate = updated
+  ? new Date(updated).toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : null;
+---
+
+<article class="card group">
+  <a href={`/posts/${post.slug}`} class="block">
+    <h2 class="text-xl font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors duration-200 mb-2">
+      {title}
+    </h2>
+  </a>
+  <div class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-muted)] mb-3">
+    <time datetime={String(date)}>{displayDate}</time>
+    {updatedDate && (
+      <span class="text-xs">
+        · 更新于 <time datetime={String(updated)}>{updatedDate}</time>
+      </span>
+    )}
+  </div>
+  {summary && (
+    <p class="text-[var(--color-muted)] text-sm leading-relaxed line-clamp-3 mb-3">
+      {summary}
+    </p>
+  )}
+  <TagBadge tags={tags} />
+</article>

@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import Pagination from "../../components/Pagination.astro";
+import { getAllPosts, sortPosts } from "../../utils/posts";
+
+export async function getStaticPaths() {
+  const allPosts = await getAllPosts();
+  const postsPerPage = 8;
+  const totalPages = Math.ceil(allPosts.length / postsPerPage);
+  // Generate pages 2 through totalPages (page 1 is index.astro)
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) },
+  }));
+}
+
+const { page } = Astro.params;
+const currentPage = Number(page);
+const allPosts = await getAllPosts();
+const sortedPosts = sortPosts(allPosts, "date");
+const postsPerPage = 8;
+const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
+const pagePosts = sortedPosts.slice(
+  (currentPage - 1) * postsPerPage,
+  currentPage * postsPerPage
+);
+---
+
+<BaseLayout title={`第 ${currentPage} 页`} description="个人博客文章列表。">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-8">文章列表</h1>
+    <div class="space-y-6">
+      {pagePosts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+    <Pagination current={currentPage} total={totalPages} base="/page" />
+  </div>
+</BaseLayout>

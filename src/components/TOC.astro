@@ -1,0 +1,32 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings = [] } = Astro.props;
+---
+
+{
+  headings.length > 0 && (
+    <aside class="hidden lg:block sticky top-24 w-56 shrink-0 self-start">
+      <nav class="p-4 rounded-lg" style="background-color: var(--color-card); border: 1px solid var(--color-border);">
+        <h3 class="text-sm font-semibold text-[var(--color-text)] mb-3">目录</h3>
+        <ul>
+          {headings.map((h) => (
+            <li style={`padding-left: ${(h.depth - 2) * 0.75}rem`}>
+              <a href={`#${h.slug}`} class="toc-link">
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )
+}

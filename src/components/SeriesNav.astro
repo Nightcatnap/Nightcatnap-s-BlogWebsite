@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  seriesMap: Map<string, CollectionEntry<"posts">[]>;
+}
+
+const { seriesMap } = Astro.props;
+
+const seriesEntries = [...seriesMap.entries()].sort((a, b) => b[1].length - a[1].length);
+---
+
+{seriesEntries.length > 0 && (
+  <section class="mt-8">
+    <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">专栏 / 系列</h2>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {seriesEntries.map(([name, posts]) => {
+        const sorted = posts.sort((a, b) => {
+          const da = a.data.date.valueOf();
+          const db = b.data.date.valueOf();
+          return db - da;
+        });
+        const latest = sorted[0];
+        return (
+          <a href={`/series/${encodeURIComponent(name.toLowerCase().replace(/\s+/g, "-"))}`} class="card group block">
+            <h3 class="text-lg font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors duration-200">
+              {name}
+            </h3>
+            <p class="text-sm text-[var(--color-muted)] mt-1">
+              {posts.length} 篇文章
+            </p>
+            {latest && (
+              <p class="text-sm text-[var(--color-muted)] mt-2 truncate">
+                最新：{latest.data.title}
+              </p>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </section>
+)}

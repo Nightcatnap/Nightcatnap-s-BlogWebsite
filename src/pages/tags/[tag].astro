@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getTagMap, sortPosts } from "../../utils/posts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  const tagMap = getTagMap(posts);
+  return [...tagMap.keys()].map((tag) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const allPosts = await getCollection("posts");
+const tagMap = getTagMap(allPosts);
+const posts = sortPosts(tagMap.get(tag) || [], "date");
+---
+
+<BaseLayout title={`标签: ${tag}`} description={`浏览标签为 "${tag}" 的所有文章。`}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
+      标签：{tag}
+    </h1>
+    <p class="text-[var(--color-muted)] mb-8">共 {posts.length} 篇文章</p>
+
+    {posts.length === 0 ? (
+      <p class="text-[var(--color-muted)]">没有找到相关文章。</p>
+    ) : (
+      <div class="space-y-6">
+        {posts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

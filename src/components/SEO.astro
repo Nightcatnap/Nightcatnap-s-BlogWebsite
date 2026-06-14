@@ -1,0 +1,38 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: string;
+}
+
+const {
+  title = "个人博客",
+  description = "一个关于技术和生活的个人博客。",
+  image = "/default-og.png",
+  type = "website",
+} = Astro.props;
+
+const siteTitle = title === "个人博客" ? title : `${title} | 个人博客`;
+---
+
+<!-- Primary Meta -->
+<title>{siteTitle}</title>
+<meta name="title" content={siteTitle} />
+<meta name="description" content={description} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:title" content={siteTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(image, Astro.site).href} />
+<meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).href} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={siteTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(image, Astro.site).href} />
+
+<!-- Canonical -->
+<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />

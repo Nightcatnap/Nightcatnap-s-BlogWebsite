@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #F6F3ED;
+    --color-card: #FAF9F6;
+    --color-accent: #00847D;
+    --color-accent-hover: #24A69E;
+    --color-error: #CF6656;
+    --color-text: #444240;
+    --color-muted: #B4B0A9;
+    --color-border: #E8E5DF;
+  }
+
+  .dark {
+    --color-bg: #1B1D23;
+    --color-card: #282A32;
+    --color-accent: #FFC42A;
+    --color-error: #FF4D4F;
+    --color-text: #FFFFFF;
+    --color-muted: #C8C8CC;
+    --color-border: #383A42;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: 3px;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--color-accent);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg p-6;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: #fff;
+    @apply px-4 py-2 rounded-lg font-medium transition-opacity duration-200;
+  }
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .tag-badge {
+    @apply inline-block px-3 py-1 text-sm rounded-full transition-colors duration-200;
+    background-color: var(--color-card);
+    color: var(--color-muted);
+    border: 1px solid var(--color-border);
+  }
+  .tag-badge:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .prose {
+    max-width: none;
+  }
+  .prose pre {
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  .prose img {
+    border-radius: 0.5rem;
+    max-width: 100%;
+    height: auto;
+  }
+  .prose code {
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+  }
+  .prose a {
+    color: var(--color-accent);
+  }
+
+  /* TOC styles */
+  .toc-link {
+    color: var(--color-muted);
+    @apply block py-1 text-sm transition-colors duration-200;
+  }
+  .toc-link:hover,
+  .toc-link.active {
+    color: var(--color-accent);
+  }
+
+  /* Search styles */
+  .search-modal {
+    background-color: var(--color-card);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+  .search-result {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .search-result:hover {
+    background-color: var(--color-bg);
+  }
+}

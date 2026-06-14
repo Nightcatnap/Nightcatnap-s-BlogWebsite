@@ -1,0 +1,57 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+---
+
+<header class="sticky top-0 z-50 bg-[var(--color-bg)]/80 backdrop-blur-md border-b border-[var(--color-border)]">
+  <nav class="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="/" class="text-xl font-bold text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors">
+      个人博客
+    </a>
+
+    <!-- Desktop nav -->
+    <div class="hidden sm:flex items-center gap-6 text-sm">
+      <a href="/" class="text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">首页</a>
+      <a href="/tags" class="text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">标签</a>
+      <a href="/archive" class="text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">归档</a>
+      <a href="/search" class="text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">搜索</a>
+      <a href="/about" class="text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">关于</a>
+      <ThemeToggle />
+    </div>
+
+    <!-- Mobile menu button -->
+    <div class="flex items-center gap-2 sm:hidden">
+      <ThemeToggle />
+      <button id="menu-btn" class="p-2 rounded-lg hover:bg-[var(--color-card)]" aria-label="Menu">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path id="menu-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <path id="menu-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden sm:hidden border-t border-[var(--color-border)] bg-[var(--color-bg)]">
+    <div class="flex flex-col gap-2 px-4 py-3">
+      <a href="/" class="py-2 text-[var(--color-muted)] hover:text-[var(--color-accent)]">首页</a>
+      <a href="/tags" class="py-2 text-[var(--color-muted)] hover:text-[var(--color-accent)]">标签</a>
+      <a href="/archive" class="py-2 text-[var(--color-muted)] hover:text-[var(--color-accent)]">归档</a>
+      <a href="/search" class="py-2 text-[var(--color-muted)] hover:text-[var(--color-accent)]">搜索</a>
+      <a href="/about" class="py-2 text-[var(--color-muted)] hover:text-[var(--color-accent)]">关于</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById("menu-btn");
+  const menu = document.getElementById("mobile-menu");
+  const openIcon = document.getElementById("menu-open");
+  const closeIcon = document.getElementById("menu-close");
+
+  btn?.addEventListener("click", () => {
+    const isOpen = !menu?.classList.contains("hidden");
+    menu?.classList.toggle("hidden", isOpen);
+    openIcon?.classList.toggle("hidden", !isOpen);
+    closeIcon?.classList.toggle("hidden", isOpen);
+  });
+</script>

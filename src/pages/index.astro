@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroSection from "../components/HeroSection.astro";
+import SeriesNav from "../components/SeriesNav.astro";
+import PostCard from "../components/PostCard.astro";
+import Pagination from "../components/Pagination.astro";
+import { getAllPosts, sortPosts, getSeriesMap } from "../utils/posts";
+
+export const prerender = true;
+
+const allPosts = await getAllPosts();
+const seriesMap = getSeriesMap(allPosts);
+const sortedPosts = sortPosts(allPosts, "date");
+
+// Pagination
+const postsPerPage = 8;
+const currentPage = 1;
+const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
+const pagePosts = sortedPosts.slice(0, postsPerPage);
+---
+
+<BaseLayout title="个人博客" description="一个关于技术和生活的个人博客。">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <HeroSection />
+    <SeriesNav seriesMap={seriesMap} />
+
+    <!-- Recent Posts -->
+    <section class="mt-12">
+      <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">最新文章</h2>
+      {
+        pagePosts.length === 0 ? (
+          <p class="text-[var(--color-muted)]">还没有文章，敬请期待。</p>
+        ) : (
+          <div class="space-y-6">
+            {pagePosts.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+    <Pagination current={currentPage} total={totalPages} base="/page" />
+  </div>
+</BaseLayout>

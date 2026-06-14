@@ -1,0 +1,115 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TagBadge from "../../components/TagBadge.astro";
+import TOC from "../../components/TOC.astro";
+import { getAdjacentPosts } from "../../utils/posts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { slug: post.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const post = await getEntry("posts", slug);
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+const { Content, headings: rawHeadings } = await post.render();
+const { title, date, updated, tags, summary, series } = post.data;
+const allPosts = await getCollection("posts");
+const { prev, next } = getAdjacentPosts(allPosts, slug);
+
+const displayDate = new Date(date).toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+const updatedDate = updated
+  ? new Date(updated).toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : null;
+
+const headings = rawHeadings
+  .filter((h) => h.depth >= 2 && h.depth <= 4)
+  .map((h) => ({
+    depth: h.depth,
+    slug: h.slug,
+    text: h.text,
+  }));
+---
+
+<BaseLayout title={title} description={summary}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="flex gap-8">
+      <!-- Main content -->
+      <article class="flex-1 min-w-0">
+        <!-- Header -->
+        <header class="mb-8">
+          <h1 class="text-3xl sm:text-4xl font-bold text-[var(--color-text)] mb-4">
+            {title}
+          </h1>
+          <div class="flex flex-wrap items-center gap-3 text-sm text-[var(--color-muted)] mb-4">
+            <time datetime={String(date)}>{displayDate}</time>
+            {updatedDate && (
+              <span>· 更新于 <time datetime={String(updated)}>{updatedDate}</time></span>
+            )}
+          </div>
+          {series && (
+            <div class="mb-4">
+              <a
+                href={`/series/${series}`}
+                class="inline-flex items-center gap-1 text-sm text-[var(--color-accent)] hover:underline"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                专栏：{series}
+              </a>
+            </div>
+          )}
+          <TagBadge tags={tags} />
+        </header>
+
+        <!-- Content -->
+        <div class="prose prose-lg max-w-none text-[var(--color-text)] [&_pre]:bg-[var(--color-card)] [&_pre]:border [&_pre]:border-[var(--color-border)] [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:overflow-x-auto [&_code]:font-mono [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--color-accent)] [&_blockquote]:pl-4 [&_blockquote]:text-[var(--color-muted)] [&_table]:w-full [&_th]:border [&_td]:border [&_th]:border-[var(--color-border)] [&_td]:border-[var(--color-border)] [&_th]:p-2 [&_td]:p-2">
+          <Content />
+        </div>
+
+        <!-- Prev/Next navigation -->
+        <nav class="mt-12 pt-6 border-t border-[var(--color-border)] grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {prev ? (
+            <a href={`/posts/${prev.slug}`} class="card group text-left">
+              <span class="text-xs text-[var(--color-muted)]">← 上一篇</span>
+              <p class="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors mt-1 truncate">
+                {prev.data.title}
+              </p>
+            </a>
+          ) : (
+            <div />
+          )}
+          {next ? (
+            <a href={`/posts/${next.slug}`} class="card group text-right">
+              <span class="text-xs text-[var(--color-muted)]">下一篇 →</span>
+              <p class="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors mt-1 truncate">
+                {next.data.title}
+              </p>
+            </a>
+          ) : (
+            <div />
+          )}
+        </nav>
+      </article>
+
+      <!-- TOC sidebar -->
+      <TOC headings={headings} />
+    </div>
+  </div>
+</BaseLayout>
